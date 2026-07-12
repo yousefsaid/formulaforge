@@ -46,6 +46,9 @@ hard budget, not an accident. The single-slot inference queue, the fixed LoRA re
 the narrow workbook boundary are all direct consequences of taking that constraint
 seriously instead of hiding it.
 
+See [docs/DESIGN_DECISIONS.md](docs/DESIGN_DECISIONS.md) for the full reasoning behind
+each of these, plus what didn't work and what surprised us along the way.
+
 ## Architecture
 
 ```mermaid
@@ -110,6 +113,8 @@ references/ranges, and `SUM`, `AVERAGE`, `MIN`, `MAX`, `COUNT`, `COUNTA`, `IF`, 
 
 ## Docs
 
+- [Design decisions](docs/DESIGN_DECISIONS.md) — the engineering story: why these
+  choices, and what didn't work
 - [Architecture](docs/ARCHITECTURE.md)
 - [Model card](docs/MODEL_CARD.md)
 - [Data card](docs/DATA_CARD.md)
