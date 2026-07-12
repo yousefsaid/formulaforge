@@ -63,7 +63,7 @@ class MLXFormulaModel:
             from mlx_lm import load
         except ImportError as exc:
             raise RuntimeError("MLX-LM is not installed; use the fake model for tests") from exc
-        self._model, self._tokenizer = load(  # type: ignore[misc]
+        self._model, self._tokenizer = load(  # type: ignore[misc, unused-ignore]
             self.model_path, adapter_path=self.adapter_path
         )
 
