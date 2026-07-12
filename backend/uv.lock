@@ -119,6 +119,7 @@ dev = [
 ]
 ml = [
     { name = "mlx-lm" },
+    { name = "pyyaml" },
 ]
 
 [package.metadata]
@@ -134,6 +135,7 @@ requires-dist = [
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3,<9" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.24,<1" },
     { name = "python-multipart", specifier = ">=0.0.12,<1" },
+    { name = "pyyaml", marker = "extra == 'ml'", specifier = ">=6.0,<7" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.8,<1" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.30,<0.31" },
 ]
