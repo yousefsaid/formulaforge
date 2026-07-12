@@ -57,16 +57,31 @@ describe("FormulaWorkspace", () => {
     render(<FormulaWorkspace />);
     expect(screen.getByText("Drop an .xlsx workbook")).toBeTruthy();
     expect(
-      screen.getByText("Your selected sheet will appear here."),
+      screen.getByText(
+        "Your sheet appears here — nothing is uploaded to a server.",
+      ),
     ).toBeTruthy();
     await waitFor(() => expect(getModelMetadata).toHaveBeenCalled());
   });
 
-  it("shows the stub-model banner when the backend reports a fake model", async () => {
+  it("discloses the stub model inside the verification ledger metadata", async () => {
+    previewWorkbook.mockResolvedValue(preview);
+    generateFormula.mockResolvedValue({
+      request_id: "r3",
+      status: "valid",
+      formula: "=SUM(A1:A2)",
+      validation_errors: [],
+      preview_value: 5,
+      model_id: "fake/formula-model",
+      adapter_version: "test",
+      latency_ms: 5,
+    });
     render(<FormulaWorkspace />);
+    await uploadAndWaitForPreview();
+    fireEvent.click(screen.getByText("Forge formula →"));
     await waitFor(() =>
-      expect(screen.getByRole("status").textContent).toContain(
-        "Hosted demo uses a stub model",
+      expect(screen.getByText(/model: stub \(hosted demo\)/).textContent).toContain(
+        "real inference runs locally on Apple Silicon",
       ),
     );
   });
