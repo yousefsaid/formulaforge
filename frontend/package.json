@@ -12,12 +12,12 @@
     "generate:api": "node scripts/generate-api.mjs"
   },
   "dependencies": {
-    "next": "15.1.9",
-    "react": "19.0.3",
-    "react-dom": "19.0.3"
+    "next": "15.5.20",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
   },
   "devDependencies": {
-    "@playwright/test": "1.49.1",
+    "@playwright/test": "1.61.1",
     "@testing-library/react": "16.1.0",
     "@types/node": "22.10.2",
     "@types/react": "19.0.2",
