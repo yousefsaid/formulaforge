@@ -1,0 +1,2 @@
+{"id":"seed-001","workbook_id":"seed-sales","task_type":"generate","instruction":"Add January and February sales","sheet_name":"Sales","target_cell":"D2","cells":[{"address":"B2","value":120},{"address":"C2","value":80}],"formula":"=SUM(B2:C2)","source":"seed"}
+{"id":"seed-002","workbook_id":"seed-sales","task_type":"repair","instruction":"Fix the total so it includes February","sheet_name":"Sales","target_cell":"D2","cells":[{"address":"B2","value":120},{"address":"C2","value":80}],"current_formula":"=B2","formula":"=SUM(B2:C2)","source":"seed"}
