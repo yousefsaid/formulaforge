@@ -1,10 +1,11 @@
 "use client";
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import {
   FormulaResponse,
   TaskType,
   WorkbookPreview,
   generateFormula,
+  getModelMetadata,
   previewWorkbook,
 } from "../lib/api";
 
@@ -22,6 +23,12 @@ export function FormulaWorkspace() {
   const [result, setResult] = useState<FormulaResponse | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isStubModel, setIsStubModel] = useState(false);
+  useEffect(() => {
+    getModelMetadata()
+      .then((metadata) => setIsStubModel(metadata.backend === "fake"))
+      .catch(() => setIsStubModel(false));
+  }, []);
   async function selectFile(event: ChangeEvent<HTMLInputElement>) {
     const next = event.target.files?.[0];
     if (!next) return;
@@ -72,6 +79,12 @@ export function FormulaWorkspace() {
         </div>
         <span className="local-badge">● Local only</span>
       </header>
+      {isStubModel && (
+        <p className="stub-banner" role="status">
+          Hosted demo uses a stub model; real inference runs locally on Apple
+          Silicon — see the eval report for measured quality.
+        </p>
+      )}
       <section className="intro">
         <div>
           <p className="eyebrow">EXCEL, REASONED OUT</p>

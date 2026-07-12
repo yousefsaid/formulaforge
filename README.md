@@ -4,10 +4,32 @@ A local-first Excel formula copilot — a fine-tuned 0.6B model proposes formula
 deterministic evaluator verifies every one before you see it.
 
 [![CI](https://github.com/yousefsaid/formulaforge/actions/workflows/ci.yml/badge.svg)](https://github.com/yousefsaid/formulaforge/actions/workflows/ci.yml)
-&nbsp;·&nbsp;[Live demo](#) _(link goes here once Phase 3 hosted demo ships)_
+&nbsp;·&nbsp;[Live demo](https://formulaforge-demo.vercel.app) _(hosted, stub model — see "Hosted demo" below)_
+&nbsp;·&nbsp;[mp4](docs/media/demo.mp4)
 
-![Demo](docs/media/demo.gif)
-_(demo GIF goes here once Phase 3 recording ships)_
+![Demo: uploading a workbook, generating and repairing a formula, and a rejected workbook](docs/media/demo.gif)
+
+_Real local MLX inference (Qwen3-0.6B, base model) end to end — not a mockup. The
+model's first proposal here was actually invalid (a circular reference); the GIF
+picks up right after with a validated proposal, a repair attempt, and a rejected
+workbook, to show the validator's range of real outcomes rather than a cherry-picked
+success. See [docs/EVAL_REPORT.md](docs/EVAL_REPORT.md) for why "plausible but not
+exactly right" is the model's typical output at this training stage._
+
+| | | |
+|---|---|---|
+| ![Generating a formula](docs/media/screenshot-generate.png) | ![Validated proposal in repair mode](docs/media/screenshot-validated.png) | ![Rejected workbook](docs/media/screenshot-rejected.png) |
+
+### Hosted demo
+
+The [live demo](https://formulaforge-demo.vercel.app) runs on Vercel: the Next.js
+frontend and the FastAPI backend (`app.py` → Python Function) in one project. The
+backend runs in fake-model mode there — MLX requires Apple Silicon, which Vercel's
+Functions don't have — but the deterministic validator/evaluator is the same real
+code that runs locally, applied to whatever the stub model proposes. The UI shows a
+banner whenever it's talking to the stub model, so it's never mistaken for the
+fine-tuned model's output; see [docs/EVAL_REPORT.md](docs/EVAL_REPORT.md) for that.
+No uploaded workbook is persisted server-side, hosted or local.
 
 ## Why this exists
 

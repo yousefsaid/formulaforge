@@ -30,9 +30,18 @@ export type WorkbookPreview = {
   cells: CellValue[];
   non_empty_cell_count: number;
 };
+export type ModelMetadata = {
+  model_id: string;
+  adapter_version: string | null;
+  ready: boolean;
+  backend: string;
+};
 
+// On Vercel the FastAPI backend is deployed as a Python Function in the same
+// project (api/index.py), so requests are same-origin and need no base URL.
 const base =
-  process.env.NEXT_PUBLIC_FORMULAFORGE_API ?? "http://127.0.0.1:8000";
+  process.env.NEXT_PUBLIC_FORMULAFORGE_API ??
+  (process.env.VERCEL ? "" : "http://127.0.0.1:8000");
 export async function previewWorkbook(
   file: File,
   sheetName?: string,
@@ -48,6 +57,11 @@ export async function previewWorkbook(
     throw new Error(
       (await response.json()).detail ?? "Could not read workbook",
     );
+  return response.json();
+}
+export async function getModelMetadata(): Promise<ModelMetadata> {
+  const response = await fetch(`${base}/api/v1/models`);
+  if (!response.ok) throw new Error("Could not load model metadata");
   return response.json();
 }
 export async function generateFormula(
