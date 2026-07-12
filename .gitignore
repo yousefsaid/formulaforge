@@ -1,0 +1,17 @@
+.DS_Store
+.venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+node_modules/
+.next/
+playwright-report/
+test-results/
+artifacts/models/
+artifacts/adapters/
+artifacts/reports/
+artifacts/datasets/
+*.xlsx
+!ml/data/*.jsonl
+*.tsbuildinfo
