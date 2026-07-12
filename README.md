@@ -39,9 +39,26 @@ flowchart LR
 
 ## Results
 
-_Base-vs-fine-tuned evaluation numbers land here after Phase 2 produces real report
-artifacts in `artifacts/reports/`. No metric is published until it's measured — see
-[docs/EVAL_REPORT.md](docs/EVAL_REPORT.md)._
+The three benchmark datasets this project intended to use turned out to be blocked
+when actually checked — two have no usable license, and the third requires emailing
+the author for access (see [artifacts/datasets/sources.json](artifacts/datasets/sources.json)).
+The numbers below are a **pipeline smoke test** run against the repo's tiny in-repo
+seed set, not a benchmark claim — they prove the base-vs-LoRA harness runs correctly
+end-to-end, and every number traces to a JSON artifact in `artifacts/reports/`. See
+[docs/EVAL_REPORT.md](docs/EVAL_REPORT.md) for the full breakdown and failure
+analysis.
+
+| Metric | Base | Adapted |
+|---|---|---|
+| Canonical exact match | 0.0 | 0.0 |
+| Execution success | 1.0 | 1.0 |
+| Abstention rate | 0.0 | 0.0 |
+| Median latency | 747 ms | 1,110 ms |
+
+Base and adapted produced byte-identical predictions on this run — expected, since 3
+LoRA iterations over 2 examples is far too little signal to move the model at all.
+A real benchmark-quality result requires re-running this same, already-working
+pipeline against a properly licensed dataset.
 
 ## Quick start
 
