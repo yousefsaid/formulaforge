@@ -63,11 +63,14 @@ class MLXFormulaModel:
             from mlx_lm import load
         except ImportError as exc:
             raise RuntimeError("MLX-LM is not installed; use the fake model for tests") from exc
-        self._model, self._tokenizer = load(self.model_path, adapter_path=self.adapter_path)
+        self._model, self._tokenizer = load(  # type: ignore[misc]
+            self.model_path, adapter_path=self.adapter_path
+        )
 
     def generate(self, request: FormulaRequest) -> str | None:
         self._load()
         from mlx_lm import generate
+        from mlx_lm.sample_utils import make_sampler
 
         tokenizer: Any = self._tokenizer
         prompt = tokenizer.apply_chat_template(
@@ -77,6 +80,11 @@ class MLXFormulaModel:
             enable_thinking=False,
         )
         raw = generate(
-            self._model, tokenizer, prompt=prompt, max_tokens=128, temp=0.0, verbose=False
+            self._model,
+            tokenizer,
+            prompt=prompt,
+            max_tokens=128,
+            sampler=make_sampler(temp=0.0),
+            verbose=False,
         )
         return parse_formula_output(raw)
