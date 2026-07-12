@@ -76,3 +76,22 @@ export async function generateFormula(
     throw new Error((await response.json()).detail ?? "Formula request failed");
   return response.json();
 }
+export async function applyFormula(
+  file: File,
+  sheetName: string,
+  targetCell: string,
+  formula: string,
+): Promise<Blob> {
+  const body = new FormData();
+  body.append("file", file);
+  body.append("sheet_name", sheetName);
+  body.append("target_cell", targetCell);
+  body.append("formula", formula);
+  const response = await fetch(`${base}/api/v1/workbooks/apply-formula`, {
+    method: "POST",
+    body,
+  });
+  if (!response.ok)
+    throw new Error((await response.json()).detail ?? "Could not apply formula");
+  return response.blob();
+}

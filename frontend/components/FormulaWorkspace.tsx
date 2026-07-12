@@ -1,13 +1,15 @@
 "use client";
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
 import {
   FormulaResponse,
   TaskType,
   WorkbookPreview,
+  applyFormula,
   generateFormula,
   getModelMetadata,
   previewWorkbook,
 } from "../lib/api";
+import { buildGrid } from "../lib/grid";
 
 const emptyPreview: WorkbookPreview | null = null;
 export function FormulaWorkspace() {
@@ -23,12 +25,17 @@ export function FormulaWorkspace() {
   const [result, setResult] = useState<FormulaResponse | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const [isStubModel, setIsStubModel] = useState(false);
   useEffect(() => {
     getModelMetadata()
       .then((metadata) => setIsStubModel(metadata.backend === "fake"))
       .catch(() => setIsStubModel(false));
   }, []);
+  const grid = useMemo(
+    () => (preview ? buildGrid(preview.cells) : null),
+    [preview],
+  );
   async function selectFile(event: ChangeEvent<HTMLInputElement>) {
     const next = event.target.files?.[0];
     if (!next) return;
@@ -69,6 +76,29 @@ export function FormulaWorkspace() {
       setLoading(false);
     }
   }
+  async function download() {
+    if (!file || !result?.formula) return;
+    setDownloading(true);
+    setError("");
+    try {
+      const blob = await applyFormula(
+        file,
+        sheet,
+        target.toUpperCase(),
+        result.formula,
+      );
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "formulaforge-modified.xlsx";
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Download failed");
+    } finally {
+      setDownloading(false);
+    }
+  }
   return (
     <main className="shell">
       <header className="masthead">
@@ -105,7 +135,12 @@ export function FormulaWorkspace() {
       <section className="workspace" aria-label="Formula workspace">
         <div className="control-panel">
           <label className="upload">
-            <input type="file" accept=".xlsx" onChange={selectFile} />
+            <input
+              type="file"
+              accept=".xlsx"
+              onChange={selectFile}
+              data-testid="workbook-input"
+            />
             <span className="upload-icon">↑</span>
             <strong>{file ? file.name : "Drop an .xlsx workbook"}</strong>
             <small>
@@ -186,15 +221,35 @@ export function FormulaWorkspace() {
               <small>{preview.non_empty_cell_count} non-empty cells</small>
             )}
           </div>
-          {preview ? (
-            <div className="cells">
-              {preview.cells.slice(0, 36).map((cell) => (
-                <div className="cell" key={cell.address}>
-                  <b>{cell.address}</b>
-                  <span>{String(cell.value)}</span>
-                </div>
-              ))}
-            </div>
+          {grid ? (
+            <>
+              <table className="grid-table">
+                <thead>
+                  <tr>
+                    <th></th>
+                    {grid.columns.map((col) => (
+                      <th key={col}>{col}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {grid.rows.map((row) => (
+                    <tr key={row}>
+                      <th>{row}</th>
+                      {grid.columns.map((col) => {
+                        const cell = grid.cellsByAddress.get(`${col}${row}`);
+                        return <td key={col}>{cell ? String(cell.value) : ""}</td>;
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {grid.truncated && (
+                <small className="grid-truncated">
+                  Showing a bounded window of the sheet; not all non-empty cells fit.
+                </small>
+              )}
+            </>
           ) : (
             <div className="empty-state">
               <span>▦</span>
@@ -224,14 +279,10 @@ export function FormulaWorkspace() {
               {result.latency_ms} ms
             </small>
             {result.status === "valid" && (
-              <button
-                onClick={() =>
-                  alert(
-                    "Confirmed. Modified-workbook download is intentionally gated in this demo.",
-                  )
-                }
-              >
-                Confirm before download
+              <button onClick={download} disabled={downloading}>
+                {downloading
+                  ? "Preparing workbook…"
+                  : "Confirm and download modified workbook"}
               </button>
             )}
           </div>

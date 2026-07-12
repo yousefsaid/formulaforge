@@ -6,12 +6,15 @@ from typing import Annotated, AsyncIterator
 
 from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 
 from .contracts import FormulaRequest, FormulaResponse, ModelMetadata, WorkbookPreview
+from .download import apply_formula_to_workbook
 from .model import FakeFormulaModel, FormulaModel, MLXFormulaModel
 from .service import FormulaService
 from .workbooks import normalize_workbook
+
+XLSX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
 
 def build_service() -> FormulaService:
@@ -80,3 +83,20 @@ async def generate_formula(
 ) -> FormulaResponse:
     response = await service.generate(payload)
     return response
+
+
+@app.post("/api/v1/workbooks/apply-formula")
+async def apply_formula(
+    file: Annotated[UploadFile, File(...)],
+    sheet_name: Annotated[str, Form()],
+    target_cell: Annotated[str, Form()],
+    formula: Annotated[str, Form()],
+) -> Response:
+    if not file.filename or not file.filename.lower().endswith(".xlsx"):
+        raise HTTPException(415, "Only .xlsx files are accepted")
+    modified = apply_formula_to_workbook(await file.read(), sheet_name, target_cell, formula)
+    return Response(
+        content=modified,
+        media_type=XLSX_MEDIA_TYPE,
+        headers={"Content-Disposition": 'attachment; filename="formulaforge-modified.xlsx"'},
+    )
