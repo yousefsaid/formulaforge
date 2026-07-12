@@ -1,0 +1,36 @@
+{
+  "audit_date": "2026-07-12",
+  "intended_sources": [
+    {
+      "name": "NL2Formula",
+      "repo": "https://github.com/timetub/NL2Formula",
+      "license": null,
+      "status": "blocked",
+      "reason": "GitHub reports no LICENSE file for this repository (license: null via `gh api repos/timetub/NL2Formula`). Absent an explicit license, default copyright applies and no permission to use or redistribute is granted."
+    },
+    {
+      "name": "SpreadNaLa",
+      "repo": "https://github.com/sebschu/SpreadNaLa",
+      "license": "MIT",
+      "status": "blocked",
+      "reason": "Repository license is MIT (permissive), but the repository contains no data files -- only LICENSE and README.md. The README states: 'Please contact Sebastian Schuster for getting access to the dataset.' Data access requires a manual request to the author that could not be completed as part of this automated run."
+    },
+    {
+      "name": "FoRepBench",
+      "repo": "https://github.com/microsoft/prose-benchmarks (subdirectory FoRepBench)",
+      "license": "other (repo-level LICENSE is a Creative Commons grant that whitelists specific benchmark folders by name)",
+      "status": "blocked",
+      "reason": "The repo's LICENSE file grants CC terms only to an explicit, enumerated list of benchmark folders (Extraction.Text, Split.Text, Transformation.Text, etc.). 'FoRepBench' does not appear in that list, so it is not covered by the stated license. Additionally, FoRepBench/Readme.md states its seed data was 'manually annotated data scraped from open-source forums,' meaning the underlying content's own provenance/rights are unclear even independent of the repo license question."
+    }
+  ],
+  "actual_source_used": {
+    "name": "seed_examples.jsonl (in-repo smoke-test dataset)",
+    "path": "ml/data/seed_examples.jsonl",
+    "sha256": "55c20cd5ca7ab429621e29431815235c63a2edb25bb9a1be40afd2d98a172690",
+    "retrieval_date": "n/a (authored in-repo, not externally retrieved)",
+    "row_count": 2,
+    "license": "same license as this repository (MIT)",
+    "note": "Per docs/DATA_CARD.md, this file is explicitly a smoke-test dataset and MUST NOT be used to support a benchmark quality claim. All Phase 2 numbers produced against this file are labeled as pipeline-validation / smoke-test results in docs/EVAL_REPORT.md, not as a measurement of model quality. Real benchmark numbers require either (a) manually obtaining SpreadNaLa access from the author, or (b) sourcing a differently-licensed formula-generation dataset."
+  },
+  "transformation_command": "make setup && cd backend && uv run python ../ml/scripts/prepare_data.py --input ../ml/data/seed_examples.jsonl --output ../ml/data/processed"
+}

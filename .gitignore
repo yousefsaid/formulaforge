@@ -11,7 +11,9 @@ test-results/
 artifacts/models/
 artifacts/adapters/
 artifacts/reports/
-artifacts/datasets/
+artifacts/datasets/*
+!artifacts/datasets/sources.json
 *.xlsx
 !ml/data/*.jsonl
+ml/data/processed/
 *.tsbuildinfo
